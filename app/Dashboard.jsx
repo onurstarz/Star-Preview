@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 /* ════════════════════════════════════════════════════════════════════════════
    ⭐ STAR DASHBOARD — Ontario Virtual School quick-launch
@@ -109,6 +109,10 @@ function getSession() {
 }
 function saveSession(s) { localStorage.setItem("star_session", s ? JSON.stringify(s) : "null"); }
 
+function prefersReducedMotion() {
+  try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; }
+}
+
 function greeting() {
   const h = new Date().getHours();
   if (h < 5) return "Late night";
@@ -131,9 +135,9 @@ const css = `
 
 :root{
   --cream:#f7efe0; --cream2:#efe4cf; --card:#fffdf7;
-  --cocoa:#5e4632; --cocoa2:#7a6048; --ink:#4a3829;
-  --muted:#9c8a73; --line:#e6d9c2;
-  --sage:#8ba577; --sage-d:#6d8a55;
+  --cocoa:#5e4632; --cocoa2:#6f573f; --ink:#4a3829;
+  --muted:#6b5942; --line:#e6d9c2;
+  --sage:#7c9866; --sage-d:#5f7a47;
   --berry:#cf8a93; --berry-d:#b96b76;
   --sky:#8fb3c9; --peach:#e6a274; --violet:#b69ccb;
   --shadow:0 10px 30px rgba(94,70,50,.12);
@@ -145,7 +149,7 @@ body{
   font-family:'Nunito',system-ui,sans-serif;
   color:var(--ink);
   background:
-    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(139,165,119,.16), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(124,152,102,.16), transparent 60%),
     radial-gradient(ellipse 70% 50% at 95% 10%, rgba(207,138,147,.14), transparent 55%),
     radial-gradient(ellipse 90% 60% at 50% 110%, rgba(230,162,116,.12), transparent 60%),
     var(--cream);
@@ -160,8 +164,8 @@ body{
 .bg-checker::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
   background-image:
-    linear-gradient(45deg, rgba(139,165,119,.05) 25%, transparent 25%, transparent 75%, rgba(139,165,119,.05) 75%),
-    linear-gradient(45deg, rgba(139,165,119,.05) 25%, transparent 25%, transparent 75%, rgba(139,165,119,.05) 75%);
+    linear-gradient(45deg, rgba(124,152,102,.05) 25%, transparent 25%, transparent 75%, rgba(124,152,102,.05) 75%),
+    linear-gradient(45deg, rgba(124,152,102,.05) 25%, transparent 25%, transparent 75%, rgba(124,152,102,.05) 75%);
   background-size:40px 40px; background-position:0 0,20px 20px;
 }
 
@@ -184,7 +188,7 @@ body{
 }
 .auth-badge{
   position:absolute;top:-22px;left:50%;transform:translateX(-50%);
-  background:var(--sage);color:#fff;font-family:'Fredoka';font-weight:600;
+  background:var(--sage-d);color:#fff;font-family:'Fredoka';font-weight:600;
   padding:8px 22px;border-radius:999px;font-size:.92rem;white-space:nowrap;
   box-shadow:var(--shadow-sm);border:2px solid #fff;
 }
@@ -217,6 +221,7 @@ body{
 .btn-go:active{transform:translateY(0);}
 .btn-go:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 .err{color:var(--berry-d);text-align:center;font-size:.82rem;font-weight:700;margin-top:12px;}
+.err:empty{margin-top:0;}
 .hint{text-align:center;font-size:.74rem;color:var(--muted);margin-top:16px;line-height:1.5;}
 
 /* ════ APP SHELL ════ */
@@ -243,7 +248,7 @@ body{
 .userchip{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);
   border-radius:999px;padding:6px 8px 6px 14px;box-shadow:var(--shadow-sm);}
 .userchip .who{font-weight:800;font-size:.82rem;color:var(--cocoa);}
-.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--sky));
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--sage-d),var(--sky));
   display:grid;place-items:center;color:#fff;font-family:'Fredoka';font-weight:600;font-size:.85rem;}
 .logout{border:none;background:var(--cream2);color:var(--cocoa2);font-weight:700;font-size:.74rem;
   padding:7px 12px;border-radius:999px;cursor:pointer;transition:.16s;font-family:'Nunito';}
@@ -262,7 +267,7 @@ body{
 .pills{display:flex;gap:10px;flex-wrap:wrap;}
 .pill{display:flex;align-items:center;gap:7px;background:var(--cream);border:2px solid var(--line);
   border-radius:999px;padding:8px 15px;font-weight:800;font-size:.78rem;color:var(--cocoa2);}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 4px rgba(139,165,119,.22);}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--sage-d);box-shadow:0 0 0 4px rgba(95,122,71,.22);}
 
 /* section label */
 .sec{display:flex;align-items:center;gap:10px;margin:30px 0 16px;}
@@ -301,9 +306,9 @@ body{
 .card:hover .arrow{color:var(--sage);transform:translateZ(20px) translateX(3px);}
 .card.feat{grid-column:1/-1;background:linear-gradient(135deg,var(--sage),var(--sage-d));border-color:transparent;color:#fff;}
 .card.feat h3,.card.feat p{color:#fff;}
-.card.feat p{opacity:.9;}
+.card.feat p{opacity:.95;}
 .card.feat .ico{background:rgba(255,255,255,.22);}
-.card.feat .arrow{color:rgba(255,255,255,.7);}
+.card.feat .arrow{color:rgba(255,255,255,.8);}
 .card.feat .go{display:inline-block;margin-top:12px;background:#fff;color:var(--sage-d);font-family:'Fredoka';
   font-weight:600;padding:8px 18px;border-radius:999px;font-size:.85rem;transform:translateZ(16px);}
 
@@ -312,7 +317,8 @@ body{
 .foot .script{font-size:1.1rem;color:var(--sage-d);}
 
 /* ════ MOBILE-SPECIFIC SHELL ════ */
-.m-head{position:sticky;top:0;z-index:20;background:rgba(247,239,224,.86);backdrop-filter:blur(10px);
+.m-head{position:sticky;top:0;z-index:20;background:rgba(247,239,224,.94);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   border-bottom:2px solid var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
 .m-greet{font-family:'Fredoka';font-weight:600;font-size:1.05rem;color:var(--cocoa);line-height:1.1;}
 .m-greet small{display:block;font-family:'Nunito';font-weight:700;font-size:.68rem;color:var(--muted);}
@@ -323,7 +329,7 @@ body{
   color:#fff;border-radius:20px;padding:18px;text-decoration:none;box-shadow:var(--shadow);margin-bottom:8px;}
 .m-feat .ico{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;}
 .m-feat h3{font-family:'Fredoka';font-weight:600;font-size:1.1rem;}
-.m-feat p{font-size:.78rem;opacity:.9;font-weight:700;}
+.m-feat p{font-size:.78rem;opacity:.95;font-weight:700;}
 .m-card{display:flex;flex-direction:column;align-items:flex-start;background:var(--card);border:2px solid var(--line);
   border-radius:18px;padding:15px;text-decoration:none;color:inherit;box-shadow:var(--shadow-sm);
   transition:transform .12s;min-height:118px;}
@@ -333,6 +339,19 @@ body{
 .m-card p{color:var(--muted);font-weight:700;font-size:.7rem;margin-top:2px;}
 
 @media (max-width:380px){.grid.mob{gap:10px;}.m-card{padding:12px;min-height:108px;}}
+
+/* visible keyboard focus (don't rely on outline:none without a replacement) */
+.seg button:focus-visible,.btn-go:focus-visible,.logout:focus-visible,
+.card:focus-visible,.card.feat:focus-visible,.m-card:focus-visible,.m-feat:focus-visible,
+.search input:focus-visible,.field input:focus-visible{
+  outline:3px solid var(--sage-d);outline-offset:2px;border-radius:8px;
+}
+
+/* respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce){
+  .deco{animation:none!important;}
+  .card,.card .ico,.card .arrow,.m-card{transition:none!important;}
+}
 `;
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -380,34 +399,35 @@ function Auth({ onLogin }) {
 
         {mode === "signup" && (
           <div className="field">
-            <label>Your name</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" onKeyDown={e => e.key === "Enter" && submit()} />
+            <label htmlFor="auth-name">Your name</label>
+            <input id="auth-name" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Alex" onKeyDown={e => e.key === "Enter" && submit()} />
           </div>
         )}
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@school.ca" onKeyDown={e => e.key === "Enter" && submit()} />
+          <label htmlFor="auth-email">Email</label>
+          <input id="auth-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@school.ca" onKeyDown={e => e.key === "Enter" && submit()} />
         </div>
         <div className="field">
-          <label>Password</label>
-          <input type="password" value={pw} onChange={e => setPw(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && submit()} />
+          <label htmlFor="auth-pw">Password</label>
+          <input id="auth-pw" type="password" value={pw} onChange={e => setPw(e.target.value)} placeholder="••••••••" onKeyDown={e => e.key === "Enter" && submit()} />
         </div>
 
-        <button className="btn-go" onClick={submit} disabled={busy}>
+        <button className="btn-go" onClick={submit} disabled={busy} aria-busy={busy}>
           {busy ? "One sec…" : mode === "login" ? "Let's go ⭐" : "Create my desk ⭐"}
         </button>
-        {err && <div className="err">{err}</div>}
+        <div className="err" role="alert" aria-live="assertive">{err}</div>
         <div className="hint">Saved only on this device — no server, nothing leaves your browser.</div>
       </div>
     </div>
   );
 }
 
-/* ── 3D tilt wrapper (desktop only) ── */
+/* ── 3D tilt wrapper (desktop only, respects reduced-motion) ── */
 function TiltCard({ children, className, href, onClick }) {
   const ref = useRef(null);
   const onMove = (e) => {
     const el = ref.current; if (!el) return;
+    if (prefersReducedMotion()) return;
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width - 0.5;
     const py = (e.clientY - r.top) / r.height - 0.5;
@@ -417,7 +437,7 @@ function TiltCard({ children, className, href, onClick }) {
   return (
     <a ref={ref} className={className} href={href} onClick={onClick}
        target={href && href !== "#" ? "_blank" : undefined} rel="noopener noreferrer"
-       onMouseMove={onMove} onMouseLeave={reset}>
+       onMouseMove={onMove} onMouseLeave={reset} onBlur={reset}>
       {children}
     </a>
   );
@@ -430,8 +450,9 @@ function DesktopDash({ session, onLogout }) {
   const [q, setQ] = useState("");
   const decorRef = useRef(null);
 
-  // mouse parallax for floating decor
+  // mouse parallax for floating decor (skipped when reduced-motion is requested)
   useEffect(() => {
+    if (prefersReducedMotion()) return;
     const onMove = (e) => {
       const el = decorRef.current; if (!el) return;
       const mx = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -455,25 +476,25 @@ function DesktopDash({ session, onLogout }) {
 
   return (
     <div className="shell">
-      <div className="decor" ref={decorRef} aria-hidden>
+      <div className="decor" ref={decorRef} aria-hidden="true">
         <span className="deco s1">⭐</span><span className="deco s2">✿</span>
         <span className="deco s3">☁️</span><span className="deco s4">✦</span>
         <span className="deco s5">🍵</span><span className="deco s6">✧</span>
       </div>
 
-      <div className="awning">{Array.from({ length: 14 }).map((_, i) => <span key={i} />)}</div>
+      <div className="awning" aria-hidden="true">{Array.from({ length: 14 }).map((_, i) => <span key={i} />)}</div>
 
       <div className="wrap">
         <div className="topbar">
           <div className="brand">
-            <div className="brand-mark">⭐</div>
+            <div className="brand-mark" aria-hidden="true">⭐</div>
             <div>
               <div className="brand-name">Star<span className="star"> Desk</span></div>
               <div className="brand-tag">Ontario Virtual School · quick launch</div>
             </div>
           </div>
           <div className="userchip">
-            <div className="av">{initials}</div>
+            <div className="av" aria-hidden="true">{initials}</div>
             <span className="who">{session.name || session.email}</span>
             <button className="logout" onClick={onLogout}>Log out</button>
           </div>
@@ -481,32 +502,32 @@ function DesktopDash({ session, onLogout }) {
 
         <div className="hero">
           <div>
-            <h1>{greeting()}, {session.name || "friend"}! ⋆˙⟡</h1>
+            <h1>{greeting()}, {session.name || "friend"}! <span aria-hidden="true">⋆˙⟡</span></h1>
             <p>Have a look around — everything you need for school, one tap away.</p>
           </div>
           <div className="pills">
-            <span className="pill"><span className="dot" /> status: ready</span>
-            <span className="pill">📅 {today()}</span>
-            <span className="pill">🧰 {TOOLS.length} tools</span>
+            <span className="pill"><span className="dot" aria-hidden="true" /> status: ready</span>
+            <span className="pill"><span aria-hidden="true">📅</span> {today()}</span>
+            <span className="pill"><span aria-hidden="true">🧰</span> {TOOLS.length} tools</span>
           </div>
         </div>
 
         <div className="sec">
-          <h2>🔎 Find a tool</h2><span className="line" />
+          <h2><span aria-hidden="true">🔎</span> Find a tool</h2><span className="line" />
         </div>
         <div className="search">
-          <span>🔎</span>
-          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search your tools…" />
+          <span aria-hidden="true">🔎</span>
+          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search your tools…" aria-label="Search your tools" />
         </div>
 
         <div className="sec">
-          <h2>✿ Your tools</h2><span className="line" /><span className="count">{rest.length} shown</span>
+          <h2><span aria-hidden="true">✿</span> Your tools</h2><span className="line" /><span className="count">{rest.length} shown</span>
         </div>
 
         {featured && (
           <a className="card feat" href={featured.href} target="_blank" rel="noopener noreferrer" style={{ marginBottom: 16 }}>
-            <span className="arrow">↗</span>
-            <div className="ico">{featured.icon}</div>
+            <span className="arrow" aria-hidden="true">↗</span>
+            <div className="ico" aria-hidden="true">{featured.icon}</div>
             <h3>{featured.name}</h3>
             <p>{featured.desc} — open your classroom & grades</p>
             <span className="go">Open school ↗</span>
@@ -516,8 +537,8 @@ function DesktopDash({ session, onLogout }) {
         <div className="grid">
           {rest.map(t => (
             <TiltCard key={t.key} className="card" href={t.href} onClick={open(t)}>
-              <span className="arrow">↗</span>
-              <div className={`ico tint-${t.tint}`}>{t.icon}</div>
+              <span className="arrow" aria-hidden="true">↗</span>
+              <div className={`ico tint-${t.tint}`} aria-hidden="true">{t.icon}</div>
               <h3>{t.name}</h3>
               <p>{t.desc}</p>
             </TiltCard>
@@ -545,24 +566,24 @@ function MobileDash({ session, onLogout }) {
   const rest = TOOLS.filter(t => !t.featured);
   return (
     <div className="shell">
-      <div className="decor" aria-hidden>
+      <div className="decor" aria-hidden="true">
         <span className="deco s1">⭐</span><span className="deco s4">✦</span><span className="deco s3">☁️</span>
       </div>
 
       <div className="m-head">
-        <div className="m-greet">{greeting()}! ⭐<small>{session.name || session.email}</small></div>
+        <div className="m-greet">{greeting()}! <span aria-hidden="true">⭐</span><small>{session.name || session.email}</small></div>
         <button className="logout" onClick={onLogout}>Log out</button>
       </div>
 
       <div className="m-body">
         <div className="m-status">
-          <span className="pill"><span className="dot" /> ready</span>
-          <span className="pill">📅 {today()}</span>
+          <span className="pill"><span className="dot" aria-hidden="true" /> ready</span>
+          <span className="pill"><span aria-hidden="true">📅</span> {today()}</span>
         </div>
 
         {featured && (
           <a className="m-feat" href={featured.href} target="_blank" rel="noopener noreferrer">
-            <div className="ico">{featured.icon}</div>
+            <div className="ico" aria-hidden="true">{featured.icon}</div>
             <div>
               <h3>{featured.name}</h3>
               <p>Tap to open your classroom ↗</p>
@@ -571,7 +592,7 @@ function MobileDash({ session, onLogout }) {
         )}
 
         <div className="sec">
-          <h2>✿ Your tools</h2><span className="line" />
+          <h2><span aria-hidden="true">✿</span> Your tools</h2><span className="line" />
         </div>
 
         <div className="grid mob">
@@ -579,7 +600,7 @@ function MobileDash({ session, onLogout }) {
             <a key={t.key} className="m-card" href={t.href}
                target={t.href !== "#" ? "_blank" : undefined} rel="noopener noreferrer"
                onClick={e => t.href === "#" && e.preventDefault()}>
-              <div className={`ico tint-${t.tint}`}>{t.icon}</div>
+              <div className={`ico tint-${t.tint}`} aria-hidden="true">{t.icon}</div>
               <h3>{t.name}</h3>
               <p>{t.desc}</p>
             </a>
