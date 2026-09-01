@@ -1,48 +1,44 @@
-# Storyboard — Script → Visual Concept Generator
+# ⭐ Star Desk — School Dashboard
 
-Paste a script or scene description and get an AI-generated storyboard of minimalist stickman illustrations.
+A cozy, interactive quick-launch dashboard for **Ontario Virtual School** and the
+everyday tools you use for school. Log in once, then jump straight to your classroom,
+school Gmail, Docs, Slides, Canva, ChatGPT, YouTube, a grammar checker, and your
+current project — all from one warm little home screen.
 
-## How it works
+Built with Next.js. **Two purpose-built layouts** ship in one app: a rich, decorated
+desktop dashboard and a thumb-friendly mobile layout, picked automatically by screen size.
 
-1. You enter text in the sidebar
-2. The app sends it to `/api/extract-keywords` — a Next.js server-side route
-3. That route calls the Anthropic API **on the server** (your key is never in the browser)
-4. Keywords are returned to the client, which generates images via [Pollinations.ai](https://pollinations.ai) (free, no key needed)
+## Features
 
-## Deploy to Vercel (2 minutes)
+- 🔐 Simple local login (saved in your browser only — no server, nothing leaves the device)
+- 🖥️📱 Separate desktop and mobile UIs, switched automatically
+- ✨ Interactive 3D-tilt tool cards + floating decorative elements (mouse parallax on desktop)
+- 🔎 Instant tool search (desktop)
+- 🎓 One-tap links that nudge Google links toward your school account
+
+## Customize your links
+
+Open `app/Dashboard.jsx` and edit the two things at the top:
+
+1. `SCHOOL_EMAIL` — your school Google account (so Gmail/Docs/Slides land on the right account).
+2. The `TOOLS` array — change any name, description, icon, or URL. A couple worth setting:
+   - **Ontario Virtual School** → swap in your exact course portal URL if different.
+   - **Grammar Checker** → currently Grammarly; point it at whichever checker you use.
+   - **My Current Project** → set its `href` to wherever your current work lives.
+
+All tools open in a new tab on purpose — Google, ChatGPT, etc. block being embedded in a page.
+
+## Run it
 
 ```bash
-# 1. Unzip and enter the folder
-unzip storyboard.zip && cd storyboard
-
-# 2. Push to GitHub
-git init && git add . && git commit -m "init"
-gh repo create storyboard --public --push
-# or create the repo at github.com manually and follow their push instructions
-
-# 3. Go to vercel.com → New Project → import your repo → Deploy
-```
-
-**Add your API key on Vercel:**
-- Project Settings → Environment Variables
-- Name: `ANTHROPIC_API_KEY`
-- Value: your key (`sk-ant-...`)
-- Redeploy after saving
-
-## Local development
-
-```bash
-cp .env.example .env.local
-# Edit .env.local and add your key
-
 npm install
-npm run dev
-# Open http://localhost:3000
+npm run dev      # open http://localhost:3000
+
+npm run build    # production build
+npm start        # serve the production build
 ```
 
-## Security notes
+## Deploy
 
-- The Anthropic API key lives only in `process.env.ANTHROPIC_API_KEY` on the server
-- It is never bundled into client JavaScript
-- The `/api/extract-keywords` route validates input and handles errors gracefully
-- Auth is localStorage-based (demo-grade); for production consider NextAuth or Clerk
+Push to GitHub and import the repo on [Vercel](https://vercel.com) → Deploy. No
+environment variables required — it's a fully client-side dashboard.

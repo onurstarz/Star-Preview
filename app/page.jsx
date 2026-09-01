@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
-const StoryboardRoot = dynamic(() => import("./StoryboardRoot"), { ssr: false });
+const Dashboard = dynamic(() => import("./Dashboard"), { ssr: false });
 
 export default function Page() {
-  return <StoryboardRoot />;
+  return <Dashboard />;
 }
